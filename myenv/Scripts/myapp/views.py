@@ -1,10 +1,19 @@
 from django.shortcuts import render
-from . models import User
-from django.contrib.auth.hashers import make_password, check_password
+#from django.contrib.auth.hashers import make_password, check_password
+from . models import User, Product, Wishlist
+from django.shortcuts import redirect
 import requests
 import random	
+
 def index(request):
 	return render(request, 'index.html')
+
+def seller_index(request):
+	user=User.objects.get(email=request.session['email'])
+	if user.usertype=="Buyer":
+		return render(request, 'index.html')
+	else:
+		return render(request, 'seller-index.html')
 
 def about(request):
 	return render(request, 'about.html')
@@ -18,8 +27,17 @@ def shopping_cart(request):
 def contact(request):
 	return render(request, 'contact.html')
 
-def product(request):
-	return render(request, 'product.html')
+def product(request, cat):
+	products=Product()
+	if cat=="all":
+		products=Product.objects.all()
+	elif cat=="Women":
+		products=Product.objects.filter(product_category="Women")
+	elif cat=="Men":
+		products=Product.objects.filter(product_category="Men")
+	elif cat=="Kids":
+		products=Product.objects.filter(product_category="Kids")
+	return render(request, 'product.html', {'products':products})
 
 def signup(request):
 	if request.method=="POST":
@@ -30,12 +48,14 @@ def signup(request):
 		except:
 			if request.POST['password']==request.POST['cpassword']:
 				User.objects.create(
+					usertype=request.POST['usertype'],
 					fname=request.POST['fname'],
 					lname=request.POST['lname'],
 					email=request.POST['email'],
 					mobile=request.POST['mobile'],
 					address=request.POST['address'],
-					password=make_password(request.POST['password']),
+					password=request.POST['password'],
+					#password=make_password(request.POST['password']),
 					profile_picture=request.FILES['profile_picture']
 
 				)
@@ -53,18 +73,26 @@ def login(request):
 	if request.method=="POST":
 		try:
 			user=User.objects.get(email=request.POST['email'])
-			encrpassword=make_password(request.POST['password'])
-			checkpassword=check_password(request.POST['password'], user.password)
-			if checkpassword==True:
-				request.session['email']=user.email
-				request.session['fname']=user.fname
-				request.session['profile_picture']=user.profile_picture.url
-				return render(request, 'index.html')
+			if user.password==request.POST['password']:
+				if user.usertype=="Buyer":
+					request.session['email']=user.email
+					request.session['fname']=user.fname
+					request.session['profile_picture']=user.profile_picture.url
+					wishlists=Wishlist.objects.filter(user=user)
+					request.session['wishlist_count']=len(wishlists)
+					return render(request, 'index.html')
+				else:
+				
+					request.session['email']=user.email
+					request.session['fname']=user.fname
+					request.session['profile_picture']=user.profile_picture.url
+					return render(request, 'seller-index.html')
 			else:
 				msg="Password is incorrect"
 				return render(request, 'login.html',{'msg':msg})
 		except:
-			return render(request, 'login.html', {'msg':'Email is incorrect'})
+			msg="Email incorrect"
+			return render(request, 'login.html', {'msg': msg})
 	else:
 		return render(request, 'login.html')
 
@@ -90,7 +118,7 @@ def forgot_password(request):
 			response = requests.request("GET", url, headers=headers, params=querystring)
 			request.session['mobile']=mobile
 			request.session['otp']=otp
-			return render(request, 'otp.html', )
+			return render(request, 'otp.html')
 		except:
 			msg="Mobile number does not exist"
 			return render(request, 'forgot-password.html', {'msg':msg})
@@ -135,8 +163,119 @@ def profile(request):
 			user.save()
 			request.session['profile_picture']=user.profile_picture.url
 			msg="Profile updated Successfully"
-			return render(request, 'profile.html', {'user':user}, {'msg':msg})
+			if user.usertype=="Buyer":
+				return render(request, 'profile.html', {'user':user,'msg':msg})
+			else:
+				return render(request, 'seller-profile.html', {'user':user,'msg':msg})
+				
 	else:
+		if user.usertype=="Buyer":
+			return render(request, 'profile.html', {'user':user})
+		else:
+			return render(request, 'seller-profile.html', {'user':user})
+def change_password(request):
+	email=request.session['email']
+	user=User.objects.get(email=email)
+	if request.method=="POST":		
+		checkpassword=check_password(request.POST['old_password'], user.password)
+		if checkpassword==True:
+			if request.POST['new_password']==request.POST['cnew_password']:
+				user.password=make_password(request.POST['new_password'])
+				user.save()
+				return redirect('logout')
+			else:
+				msg="New & Cofirm passwords not matched"
+				return render(request, 'change-password.html',{'msg':msg})
+		else:
+			msg="Invalid Old Password"
+			return render(request, 'change-password.html',{'msg':msg})
+	else:
+		if user.usertype=="Buyer":
+			return render(request, 'change-password.html')
+		else:
+			return render(request, 'seller-change-password.html')
 
-		return render(request, 'profile.html', {'user':user})
 
+def seller_add_product(request):
+	seller=User.objects.get(email=request.session['email'])
+	if request.method=="POST":
+		Product.objects.create(
+					seller = seller,
+					product_category=request.POST['product_category'],
+					product_brand=request.POST['product_brand'],
+					product_size=request.POST['product_size'],
+					product_price=request.POST['product_price'],
+					product_name=request.POST['product_name'],
+					product_desc=request.POST['product_desc'],
+					product_image=request.FILES['product_image'],
+			)
+		msg="Product added Successfully"
+		return render(request, 'seller-add-product.html', {'msg':msg})
+	else:
+		return render(request, 'seller-add-product.html')
+
+
+def seller_view_product(request):
+	seller=User.objects.get(email=request.session['email'])
+	products=Product.objects.filter(seller=seller)
+	return render(request, 'seller-view-product.html', {'products': products})
+
+def seller_product_detail(request, pk):
+	product=Product.objects.get(pk=pk)
+	return render(request, 'seller-product-detail.html', {'product':product})
+
+def seller_product_edit(request, pk):
+	product=Product.objects.get(pk=pk)
+	if request.method=="POST":
+		product.product_category=request.POST['product_category']
+		product.product_brand=request.POST['product_brand']
+		product.product_size=request.POST['product_size']
+		product.product_name=request.POST['product_name']
+		product.product_price=request.POST['product_price']
+		product.product_desc=request.POST['product_desc']
+		try:
+			product.product_image=request.FILES['product_image']
+		except:
+			pass
+			product.save()
+			msg="Product Edited Successfully"
+			return render(request, 'seller-product-edit.html', {'product':product, 'msg':msg})
+
+	else:
+		return render(request, 'seller-product-edit.html', {'product':product})
+
+
+def seller_product_delete(request,pk):
+	product=Product.objects.get(pk=pk)
+	product.delete()
+	return redirect('seller-view-product')
+
+def product_details(request,pk):
+	wishlist_flag=False
+	user=User.objects.get(email=request.session['email'])  
+	product=Product.objects.get(pk=pk)
+	try:
+			Wishlist.objects.get(user=user, product=product)
+			wishlist_flag=True
+	except:
+			pass
+	return render(request, 'product-details.html', {'product':product, 'wishlist_flag': wishlist_flag})
+
+def add_to_wishlist(request,pk):
+	product=Product.objects.get(pk=pk)
+	user=User.objects.get(email=request.session['email'])
+	Wishlist.objects.create(user=user, product=product)
+	return redirect('wishlist')
+
+def wishlist(request):
+	user=User.objects.get(email=request.session['email'])
+	wishlists=Wishlist.objects.filter(user=user)
+	request.session['wishlist_count']=len(wishlists)
+	return render(request, 'wishlist.html', {'wishlists': wishlists })
+
+def remove_from_wishlist(request,pk):
+	product=Product.objects.get(pk=pk)
+	user=User.objects.get(email=request.session['email'])
+	wishlist=Wishlist.objects.get(user=user, product=product)
+	wishlist.delete()
+	return redirect('wishlist')

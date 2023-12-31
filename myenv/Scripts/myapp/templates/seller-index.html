@@ -1,4 +1,4 @@
-{% extends 'header.html'%}
+{% extends 'seller-header.html'%}
 {% load static %}
 {% block content %}
 
@@ -188,20 +188,26 @@
 					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
 						All Products
 					</button>
-					<a href="{% url 'product' cat='Women'%}">
+
 					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".women">
 						Women
-					</button></a>
-					<a href="{% url 'product' cat='Men'%}">
+					</button>
+
 					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".men">
 						Men
-					</button></a>
-					<a href="{% url 'product' cat='Kids'%}">
-					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".bag">
-						Kids
 					</button>
-					</a>
 
+					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".bag">
+						Bag
+					</button>
+
+					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".shoes">
+						Shoes
+					</button>
+
+					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".watches">
+						Watches
+					</button>
 				</div>
 
 				<div class="flex-w flex-c-m m-tb-10">

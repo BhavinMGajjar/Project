@@ -1,37 +1,51 @@
-{% extends 'header.html'%}
+{% extends 'seller-header.html'%}
 {% load static %}
 {% block content %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Product</title>
+	<title>Home</title>
 	
 </head>
 <body class="animsition">
 	
+	
 	<br> <br> <br>
 	<!-- Product -->
-	<div class="bg0 m-t-23 p-b-140">
+	<section class="bg0 p-t-23 p-b-140">
 		<div class="container">
+			<div class="p-b-10">
+				<h3 class="ltext-103 cl5">
+					My Products
+				</h3>
+			</div>
+
 			<div class="flex-w flex-sb-m p-b-52">
 				<div class="flex-w flex-l-m filter-tope-group m-tb-10">
-					<a href="{% url 'product' cat='all'%}"><button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
+					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
 						All Products
-					</button></a>
-					<a href="{% url 'product' cat='Women'%}">
+					</button>
+
 					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".women">
 						Women
-					</button></a>
-					<a href="{% url 'product' cat='Men'%}">
+					</button>
+
 					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".men">
 						Men
-					</button></a>
-					<a href="{% url 'product' cat='Kids'%}">
-					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".bag">
-						Kids
 					</button>
-					</a>
 
+					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".bag">
+						Bag
+					</button>
+
+					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".shoes">
+						Shoes
+					</button>
+
+					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".watches">
+						Watches
+					</button>
 				</div>
 
 				<div class="flex-w flex-c-m m-tb-10">
@@ -257,7 +271,7 @@
 						<div class="block2-pic hov-img0">
 							<img src="{{i.product_image.url}}" style="width: 300px; height: 350px;" alt="IMG-PRODUCT">
 
-							<a href="{% url 'product-details' pk=i.pk %}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
+							<a href="{% url 'seller-product-detail' pk=i.pk %}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
 								Quick View
 							</a>
 						</div>
@@ -283,7 +297,8 @@
 					</div>
 				</div>
 				{% endfor %}
-			</div>	
+			</div>
+
 			<!-- Load more -->
 			<div class="flex-c-m flex-w w-full p-t-45">
 				<a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
@@ -291,9 +306,8 @@
 				</a>
 			</div>
 		</div>
-	</div>
-		
-
+	</section>
 </body>
 </html>
+
 {% endblock %}

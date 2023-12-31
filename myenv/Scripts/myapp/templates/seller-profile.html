@@ -1,10 +1,10 @@
-{% extends 'header.html'%}
+{% extends 'seller-header.html'%}
 {% load static %}
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Contact</title>
+	<title>Profile</title>
 	
 </head>
 <body class="animsition">
@@ -13,7 +13,7 @@
 	<!-- Title page -->
 	<section class="bg-img1 txt-center p-lr-15 p-tb-92" style="background-image: url({% static 'images/bg-02.jpg' %});">
 		<h2 class="ltext-105 cl0 txt-center">
-			Contact
+			Profile
 		</h2>
 	</section>	
 
@@ -26,50 +26,34 @@
 					{% if msg %}
 						<b style="color:blue">{{msg}}</b>
 					{% endif %}
-					<form method="post" action="{% url 'signup' %}" enctype="multipart/form-data">
+					<form method="post" action="{% url 'profile' %}" enctype="multipart/form-data">
 						{% csrf_token %}
 						<h4 class="mtext-105 cl2 txt-center p-b-30">
-							Sign up
+							Update profile
 						</h4>
-						<div class="bor8 m-b-20 how-pos4-parent">
-							<select class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="usertype" placeholder="Your usertype">
-								<option>---Select User Type</option>
-								<option>Buyer</option>
-								<option>Seller</option>
-
-							</select>
-
-						</div>
 
 						<div class="bor8 m-b-20 how-pos4-parent">
-							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="fname" placeholder="Your FirstName">
+							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="fname" placeholder="Your FirstName" value="{{user.fname}}">
 							
 						</div>
 						<div class="bor8 m-b-20 how-pos4-parent">
-							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="lname" placeholder="Your last name">
+							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="lname" placeholder="Your last name" value="{{user.lname}}">
 						
 						</div>
 						<div class="bor8 m-b-20 how-pos4-parent">
-							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="mobile" placeholder="Your mobile number">
+							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="mobile" placeholder="Your mobile number" value="{{user.mobile}}">
 							
 						</div>
 						<div class="bor8 m-b-20 how-pos4-parent">
-							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="email" name="email" placeholder="Your Email Address">
+							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="email" placeholder="Your Email Address" readonly>
 							
 						</div>
 
 						<div class="bor8 m-b-30">
-							<textarea class="stext-111 cl2 plh3 size-120 p-lr-28 p-tb-25" name="address" placeholder="Your address here"></textarea>
+							<textarea class="stext-111 cl2 plh3 size-120 p-lr-28 p-tb-25" name="address" placeholder="Your address here">{{user.address}}</textarea>
 						</div>
-
-						<div class="bor8 m-b-20 how-pos4-parent">
-							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="password" name="password" placeholder="Password">
-							
-						</div>
-
-						<div class="bor8 m-b-20 how-pos4-parent">
-							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="Password" name="cpassword" placeholder="Confirm password">
-							
+						<div class="bor8 m-b-30">
+							<img src="{{user.profile_picture.url}}" width="100px" height="100px">
 						</div>
 
 						<div class="bor8 m-b-20 how-pos4-parent">
@@ -78,7 +62,7 @@
 						</div>
 
 						<button class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer" type="submit">
-							Sign up
+							Update profile
 						</button>
 					</form>
 				</div>
